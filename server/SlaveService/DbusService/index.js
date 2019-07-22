@@ -2,6 +2,8 @@
 import DBus from 'dbus';
 import { promisify } from 'util';
 import _ from 'lodash';
+/* Database variables */
+import MongoClient from 'mongodb';
 
 const DBUS_SERVICE_NAME = 'org.freedesktop.DBus';
 const DBUS_INTERFACE_NAME = 'org.freedesktop.DBus';
@@ -16,8 +18,6 @@ const SLAVE_INTERFACE_NAME = `${SERVICE_NAME}.Slave1`;
 const SOURCE_INTERFACE_NAME = `${SERVICE_NAME}.Source1`;
 
 const INVALID_ARGUMENTS = `${SERVICE_NAME}.InvalidArgs`;
-/* Database variables */
-import MongoClient from 'mongodb';
 
 const urlDB = 'mongodb://localhost:27017/CESAR4_0';
 
