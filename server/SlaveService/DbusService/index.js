@@ -16,6 +16,10 @@ const SLAVE_INTERFACE_NAME = `${SERVICE_NAME}.Slave1`;
 const SOURCE_INTERFACE_NAME = `${SERVICE_NAME}.Source1`;
 
 const INVALID_ARGUMENTS = `${SERVICE_NAME}.InvalidArgs`;
+/* Database variables */
+import MongoClient from 'mongodb';
+
+const urlDB = 'mongodb://localhost:27017/CESAR4_0';
 
 function setKeysToLowerCase(obj) {
   return _.mapKeys(obj, (v, k) => k.toLowerCase());
@@ -154,6 +158,20 @@ class DbusServices {
         const source = _.find(sources, src => src.path === objPath);
         console.log(`Changes to source ${source.address}: ${JSON.stringify(changedProperties)}`);
         _.merge(source, changedProperties);
+
+        /* insert data into mongo */
+        MongoClient.connect(urlDB, { useNewUrlParser: true }, (err, db) => {
+          if (err) {
+            throw err;
+          } else {
+            const cesarDB = db.db('CESAR4_0');
+            cesarDB.createCollection('meteorologyStation');
+            const date = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+            const data = { Name: source.name, Value: source.value, timestamp: date };
+            cesarDB.collection('meteorologyStation').insertOne(data);
+          }
+          db.close();
+        });
         if (this.sourceUpdateCb) {
           this.sourceUpdateCb(slave.id, source.address, changedProperties);
         }
